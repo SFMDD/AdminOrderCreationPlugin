@@ -46,7 +46,23 @@ final class OrderPreviewAction
         $order = $this->orderFactory->createForCustomerAndChannel($customerId, $channelCode);
 
         $form = $this->formFactory->create(NewOrderType::class, $order);
-        $order = $form->handleRequest($request)->getData();
+        $form->handleRequest($request)->getData();
+
+        $errors = $form->getErrors(true, true);
+        $count = sizeof(array_filter(iterator_to_array($errors), fn(FormError $error) => $error->getMessageTemplate() === 'sylius.cart_item.not_available'));
+
+        if(($form->isSubmitted() && !$form->isValid()) && (!empty($errors) && sizeof($errors) > $count)) {
+            return new Response($this->twig->render('@SyliusAdminOrderCreationPlugin/Order/create.html.twig', [
+                'form' => $form->createView(),
+            ]));
+        }
+
+        $order = $form->getData();
+
+        $this->orderProcessor->process($order);
+        foreach($order->getItems() as $item) {
+            $item->recalculateAdjustmentsTotal();
+        }
         $this->orderProcessor->process($order);
 
         return new Response($this->twig->render('@SyliusAdminOrderCreationPlugin/Order/preview.html.twig', [
