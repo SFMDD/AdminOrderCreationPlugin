@@ -1,5 +1,5 @@
 {
-    "name": "sylius/admin-order-creation-plugin",
+    "name": "fmdd/admin-order-creation-plugin",
     "type": "sylius-plugin",
     "keywords": ["sylius", "sylius-plugin", "symfony", "e-commerce", "admin order creation"],
     "description": "Sylius Plugin for order creation in Admin panel",
@@ -20,7 +20,6 @@
     ],
     "require": {
         "php": "^8.0",
-
         "sylius/sylius": "^1.10",
         "friendsofsymfony/jsrouting-bundle": "^2.2"
     },
